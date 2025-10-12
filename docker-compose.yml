@@ -1,0 +1,61 @@
+services:
+
+  front:
+    image: front
+    container_name: front
+    build: 
+      context: ./front/ # директория сборки (контекст)
+      dockerfile: Dockerfile # Имя файла описания контейнера (Dockerfile)
+    labels:
+      - "traefik.enable=true"
+      # HTTP роутер с редиректом на HTTPS
+      - "traefik.http.routers.itsays-http.rule=Host(`itsays.pro`)"
+      - "traefik.http.routers.itsays-http.entrypoints=web"
+      - "traefik.http.routers.itsays-http.middlewares=redirect-to-https"
+      # HTTPS роутер
+      - "traefik.http.routers.itsays.rule=Host(`itsays.pro`)"
+      - "traefik.http.routers.itsays.entrypoints=websecure"
+      - "traefik.http.routers.itsays.tls.certresolver=myresolver"
+      - "traefik.http.services.itsays.loadbalancer.server.port=80"
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  backend:
+    image: back
+    container_name: back
+    volumes:
+      - ./back/dbimages:/usr/src/app/dbimages
+      - ./back/uploads:/usr/src/app/uploads
+    build:.
+      context: ./back # директория сборки (контекст)
+      dockerfile: Dockerfile # Имя файла описания контейнера (Dockerfile)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      # Сервис для backend
+      - "traefik.http.services.itsays-backend.loadbalancer.server.port=3000"
+      # Добавляем host для резолвинга
+      - "traefik.http.services.itsays-backend.loadbalancer.server.scheme=http"
+
+      # HTTP роутеры с редиректом на HTTPS
+      - "traefik.http.routers.itsays-api-http.rule=Host(`itsays.pro`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.itsays-api-http.entrypoints=web"
+      - "traefik.http.routers.itsays-api-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.itsays-api-http.priority=120"
+
+      # HTTPS роутеры
+      - "traefik.http.routers.itsays-api.rule=Host(`itsays.pro`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.itsays-api.entrypoints=websecure"
+      - "traefik.http.routers.itsays-api.tls.certresolver=myresolver"
+      - "traefik.http.routers.itsays-api.service=itsays-backend"
+      - "traefik.http.routers.itsays-api.priority=120"
+
+    networks:
+      - proxy
+    restart: unless-stopped
+
+
+networks: 
+  proxy: 
+    external: true
