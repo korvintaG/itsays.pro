@@ -1,4 +1,8 @@
 {
+  "ts-node": {
+    "files": true
+   },
+
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
