@@ -23,8 +23,8 @@ import { UsersModule } from './DDD/users/users.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        return {
-          type: 'postgres',
+        const dbConfig = {
+          type: 'postgres' as const,
           host: configService.get('DATABASE_HOST'),
           port: configService.get('DATABASE_PORT'),
           username: configService.get('DATABASE_USERNAME'),
@@ -37,6 +37,16 @@ import { UsersModule } from './DDD/users/users.module';
           ],
           synchronize: true,
         };
+        
+        console.log('=== DATABASE CONNECTION CONFIG ===');
+        console.log('Host:', dbConfig.host);
+        console.log('Port:', dbConfig.port);
+        console.log('Username:', dbConfig.username);
+        console.log('Password:', dbConfig.password);
+        console.log('Database:', dbConfig.database);
+        console.log('==================================');
+        
+        return dbConfig;
       },
     }),
 

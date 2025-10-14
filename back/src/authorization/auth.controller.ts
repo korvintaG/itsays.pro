@@ -53,10 +53,10 @@ export class AuthController {
     return { success: true };
   }
 
-  @Post('register')
+  /*@Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     return await this.authService.register(createUserDto);
-  }
+  }*/
 
   @UseGuards(JwtRefreshAuthGuard)
   @Get('token')

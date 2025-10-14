@@ -1,33 +1,28 @@
 services:
 
-  front:
-    image: front
-    container_name: front
-    build: 
-      context: ./front/ # директория сборки (контекст)
-      dockerfile: Dockerfile # Имя файла описания контейнера (Dockerfile)
-    labels:
-      - "traefik.enable=true"
-      # HTTP роутер с редиректом на HTTPS
-      - "traefik.http.routers.itsays-http.rule=Host(`itsays.pro`)"
-      - "traefik.http.routers.itsays-http.entrypoints=web"
-      - "traefik.http.routers.itsays-http.middlewares=redirect-to-https"
-      # HTTPS роутер
-      - "traefik.http.routers.itsays.rule=Host(`itsays.pro`)"
-      - "traefik.http.routers.itsays.entrypoints=websecure"
-      - "traefik.http.routers.itsays.tls.certresolver=myresolver"
-      - "traefik.http.services.itsays.loadbalancer.server.port=80"
+  pg:
+    image: postgres:17.4
+    container_name: pg
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    environment:
+      - PGPORT=5433
+    env_file:
+      - .env
     networks:
-      - proxy
+      - internal
     restart: unless-stopped
+    command: -p 5433
 
-  backend:
+  back:
     image: back
     container_name: back
     volumes:
       - ./back/dbimages:/usr/src/app/dbimages
       - ./back/uploads:/usr/src/app/uploads
-    build:.
+    build: 
       context: ./back # директория сборки (контекст)
       dockerfile: Dockerfile # Имя файла описания контейнера (Dockerfile)
     labels:
@@ -51,6 +46,33 @@ services:
       - "traefik.http.routers.itsays-api.service=itsays-backend"
       - "traefik.http.routers.itsays-api.priority=120"
 
+    env_file:
+      .env
+    networks:
+      - proxy
+      - internal
+    depends_on:
+      - pg
+    restart: unless-stopped
+
+
+  front:
+    image: front
+    container_name: front
+    build: 
+      context: ./front/ # директория сборки (контекст)
+      dockerfile: Dockerfile # Имя файла описания контейнера (Dockerfile)
+    labels:
+      - "traefik.enable=true"
+      # HTTP роутер с редиректом на HTTPS
+      - "traefik.http.routers.itsays-http.rule=Host(`itsays.pro`)"
+      - "traefik.http.routers.itsays-http.entrypoints=web"
+      - "traefik.http.routers.itsays-http.middlewares=redirect-to-https"
+      # HTTPS роутер
+      - "traefik.http.routers.itsays.rule=Host(`itsays.pro`)"
+      - "traefik.http.routers.itsays.entrypoints=websecure"
+      - "traefik.http.routers.itsays.tls.certresolver=myresolver"
+      - "traefik.http.services.itsays.loadbalancer.server.port=80"
     networks:
       - proxy
     restart: unless-stopped
@@ -58,4 +80,7 @@ services:
 
 networks: 
   proxy: 
+    external: true
+  internal:
+    name: internal
     external: true
