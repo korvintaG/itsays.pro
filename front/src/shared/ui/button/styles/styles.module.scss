@@ -1,0 +1,24 @@
+.button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter-Regular';
+  font-weight: 400;
+  font-size: var(--bt-font-size);
+  background-color: var(--color-button_background);
+  color: var(--color-button_font);
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  min-height: 55px;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    opacity 0.2s;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+

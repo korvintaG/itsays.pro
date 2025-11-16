@@ -1,0 +1,31 @@
+@use './bp' as bp;
+
+body[data-scroll-locked],
+body[data-scroll-locked='1'],
+body[data-scroll-locked][style] {
+  margin-right: 0 !important;
+}
+
+:root {
+  --color-button_background: #A0A0A0; //фон
+  --color-button_font: #FFFFFF;
+
+  --color-input_background: #F1F1F1;
+  --color-input_font: #000000;
+  --color-input_label: #A0A0A0; //фон
+
+
+  --font-main: 'Inter-Regular';
+}
+
+html {
+  scroll-padding-top: 50px;
+}
+
+html,
+body {
+  max-width: 100dvw;
+  overflow-x: hidden;
+  min-height: 100dvh;
+  scroll-behavior: smooth;
+}

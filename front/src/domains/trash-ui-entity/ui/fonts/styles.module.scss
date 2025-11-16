@@ -1,0 +1,18 @@
+.container {
+  width: 100%;
+  display: flex;
+  gap: 9px;
+  margin: 0 30px;
+  flex-direction: column;
+}
+
+.text {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.interRegular {
+  font-size: 24px;
+  font-family: 'Inter-Regular';
+  font-weight: 400;
+}
