@@ -9,7 +9,7 @@ export const UIFonts: React.FC = () => {
       description="Проверка установки шрифтов"
       props={[]}
       components={
-        <div>
+        <div className={styles.container}>
         <span className={styles.text}>Пример текста системный шрифт</span>
         <br/>
         <span className={styles.interRegular}>Пример текста Inter-Regular</span>

@@ -1,0 +1,38 @@
+.container {
+    height: 78px;
+    background-color: var(--menu-background);
+    color: black;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 37px;
+    padding-right: 27px;
+
+    & a {
+        color: black;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+
+.icon {
+    color: black;
+    background-color: transparent;
+    width: 45px;
+    padding: 0;
+    margin: 0;
+    flex-grow: 0;
+    display: flex;
+    align-items: flex-end;
+    border: none;
+
+    &:hover {
+        outline: none;
+        border: none;
+        transform: scale(1.1);
+    }
+}

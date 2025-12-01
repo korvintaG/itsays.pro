@@ -5,14 +5,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../DDD/users/users.service';
 import { User } from '../DDD/users/entities/user.entity';
-import { IUser } from '../types/custom';
+import { IUser, Role } from '../types/custom';
 import { CreateUserDto } from '../DDD/users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import ms from 'ms';
+import ms = require('ms');
 import { ITelegramUser } from '../DDD/telegram/registration/telegram.types';
 
 const scrypt = promisify(_scrypt);
@@ -26,6 +26,7 @@ export class AuthService {
   ) {}
 
   async login(res: Response, user: IUser) {
+    console.log('login',user)
     if (!user || !user.id) {
       throw new BadRequestException({
         error: 'Bad Request',
@@ -47,14 +48,14 @@ export class AuthService {
     const hash = await this.hashPasswordWithSalt(password, salt);
     if (storedHash === hash) {
       const { password, ...result } = user;
-      return result;
+      return { ...result, role_id: (result as IUser).role_id ?? Role.User };
     }
     return null;
   }
 
   async generateRefreshToken(authUser: Partial<User>) {
     return this.jwtService.sign(
-      { id: authUser.id, name: authUser.name},
+      { id: authUser.id, name: authUser.name, role_id: (authUser as IUser).role_id ?? Role.User },
       {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get('AUTH_REFRESH_TOKEN_EXPIRY'),
@@ -94,7 +95,7 @@ export class AuthService {
   }
 
   async generateAccessToken(user: Partial<User>) {
-    const payload = { id: user.id, name: user.name };
+    const payload = { id: user.id, name: user.name, role_id: (user as IUser).role_id ?? Role.User };
     return {
       access_token: this.jwtService.sign(payload), // jwt module is configured in auth.module.ts for access token
       success: true,

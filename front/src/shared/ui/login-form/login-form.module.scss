@@ -1,0 +1,42 @@
+.form {
+    /* border: 1px red solid; */
+    width: 100%;
+}
+
+.title {
+    margin-top: 89px;
+    font-size: 20px;
+    color: black;
+}
+
+.inputs {
+    display: flex;
+    gap: 14px;
+    flex-direction: column;
+    margin-top: 37px;
+}
+
+.forgot {
+    text-align: right;
+    color: #A0A0A0;
+    text-decoration: underline;
+    font-size: 12px;
+    font-weight: 500;
+
+    &:hover {
+        cursor: pointer;
+        color: black;
+        font-weight: 400;
+    }
+}
+
+.buttons {
+    display: flex;
+    gap: 9px;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.error {
+    color: red;
+}

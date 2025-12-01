@@ -1,0 +1,30 @@
+.form_container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.form {
+    /*border: 1px solid blue;*/
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.record-header {
+    text-align: left;
+    padding-left: calc(100vw / 60);
+    padding-top: calc(100vw / 60);
+    font-size: 16px;
+    font-weight: normal;
+    font-family: 'Montserrat';
+  }
+  
+/********************************************
+* адаптивность
+********************************************/
+@media (max-width: 750px) {
+  .record-header {
+    padding: 10px 10px;
+  }
+}

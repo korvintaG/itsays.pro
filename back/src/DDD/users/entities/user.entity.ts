@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Thing } from '../../things/entities/thing.entity';
+import { Role } from 'src/types/custom';
 
 @Entity('users')
 export class User {
@@ -18,6 +20,17 @@ export class User {
   @Column('varchar', { select: false })
   password: string;
 
+  // варианты:
+  // =0 - обычный
+  // =1 - админ
+  // =2 - удаленный
+  // =3 - суперадмин
+  @Column({ type: 'int', default: 0, select: false })
+  role_id: Role;
+
+
+  @OneToMany(() => Thing, (thing) => thing.user)
+  things: Thing[];
 
   /*@OneToMany(() => Attitude, (attitude) => attitude.user)
   attitudes: Attitude[];*/

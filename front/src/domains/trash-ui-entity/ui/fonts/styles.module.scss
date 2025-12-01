@@ -1,9 +1,7 @@
 .container {
   width: 100%;
-  display: flex;
-  gap: 9px;
-  margin: 0 30px;
-  flex-direction: column;
+  margin: 0 5px;
+  text-align: left;
 }
 
 .text {
@@ -13,6 +11,6 @@
 
 .interRegular {
   font-size: 24px;
-  font-family: 'Inter-Regular';
   font-weight: 400;
+  font-family: 'Inter';
 }

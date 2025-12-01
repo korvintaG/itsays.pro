@@ -1,0 +1,37 @@
+import {  type IFile}  from '../files-type'
+import { Api } from '../../../shared/api/api'; 
+import { getCookie } from '../../../shared/utils/cookie'; 
+
+export const API_URL = import.meta.env.VITE_API_URL!;
+
+export interface IFilesAPI {
+    uploadFile: (data: FormData) =>any;
+}
+
+export class FilesAPI extends Api implements IFilesAPI {
+
+
+	uploadFile = (data: FormData) => {
+		if (!data.has('image')) {
+			return Promise.reject(new Error('No image file provided'));
+		  }
+		
+		return this.requestWithRefresh<IFile>('/files/upload-image', {
+			method: 'POST',
+			body: data,
+			headers: {
+				Authorization: `Bearer ${getCookie('accessToken')}`
+			}
+		}).then((data) => ({
+			...data,
+			fileName: data.file_name,
+		}));
+	};
+
+
+}
+
+
+
+const filesAPI=new FilesAPI(API_URL);
+export default filesAPI;

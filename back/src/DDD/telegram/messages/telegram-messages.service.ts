@@ -46,7 +46,8 @@ export class TelegramMessagingService implements OnModuleInit {
       true,
     );
 
-    this.schedulerRegistry.addCronJob('handleTelegramMsgQueue', job);
+    // Приведение к any, чтобы обойти расхождение типов CronJob из разных экземпляров пакета cron
+    this.schedulerRegistry.addCronJob('handleTelegramMsgQueue', job as any);
   }
 
   async sendMessageToAdmin(text: string): Promise<void> {

@@ -23,5 +23,8 @@ dist-ssr
 *.sw?
 .env
 
+dbimages
+uploads
+
 arc.bat 
 ar*.bat

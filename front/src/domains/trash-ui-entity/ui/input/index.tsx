@@ -14,7 +14,11 @@ export const UIInput: React.FC = () => {
       ]}
       components={
         <div className={styles.container}>
-          <Input label="Email" value={value} onChange={(e)=>setValue(e.target.value)} />
+          <Input 
+            multiline 
+            label="Email" 
+            value={value} 
+            onChange={(e)=>setValue(e.target.value)} />
           
 
         </div>

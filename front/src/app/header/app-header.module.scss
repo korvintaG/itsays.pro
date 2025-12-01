@@ -1,0 +1,155 @@
+.header {
+  --menu-height: 56px;
+  --logo-width: 35px;
+}
+.header {
+  display: flex;
+  width: 100%;
+  /*background-color: var(--menu-background-color);*/
+  background: var(--menu-background);
+  align-items: center;
+  font-size: 15px;
+  font-weight: 500;
+  /*text-transform: uppercase;*/
+  color: var(--color-input_font);
+  font-style: normal;
+  line-height: normal;
+}
+
+.navigation {
+  display: flex;
+  width: 100%;
+  height: var(--menu-height);
+  margin: 0 auto;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation_left {
+  display: flex;
+  align-items: center;
+ /* border: 1px white solid*/
+}
+
+
+.logo_block {
+  /*border: 1pr red solid;*/
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /*border: 1px white solid;*/
+  flex-grow:0;
+  transition: transform 0.3s ease, color 0.3s ease;
+  color: black;
+  padding-left: 7px;
+}
+
+.logo_block:hover {
+/*  transform: scale(1.05);*/
+  color: darkgray;
+}
+
+.link_position_last {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logo_icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+  margin: 5px;
+  width: var(--logo-width) ;
+  /*height: var(--logo-width) ;*/
+  /*height: 30px;*/
+  flex-grow: 1;
+}
+
+.logo_text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo_text p {
+  display: inline-block;
+  /*min-width: 85px;*/
+  flex-grow: 0;
+  text-align: left;
+  /*border: 1px solid oldlace;*/
+  text-wrap:nowrap;
+}
+
+.logo_text p:nth-of-type(2) {
+  font-size: 10px;
+}
+
+.auth {
+  display: flex;
+  align-items: center;
+  color: gray;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.auth:hover {
+  color: darkgray;
+  transform: scale(1.1);
+}
+
+
+.auth {
+  margin: 5px;
+  width: calc(var(--logo-width) - 5px);
+  flex-grow: 0;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  text-align: left;
+  font-size: 18px;
+  flex-grow: 1;
+  
+
+  & a {
+    color: black;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+  }
+}
+
+
+
+.menuAction {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  padding: 0;
+
+  &:hover, &:focus {
+    outline: none;
+    border: none;
+  }
+
+  &:hover {
+      text-decoration: underline;
+  }
+
+}
+
+.modal_main_app {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 30px;
+  /*border: 1px red solid;*/
+  flex-grow: 1;
+}
+
+.lastButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin: 20px 0;
+}

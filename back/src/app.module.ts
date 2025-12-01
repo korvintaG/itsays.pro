@@ -6,11 +6,18 @@ import { AppService } from './app.service';
 import { User } from './DDD/users/entities/user.entity';
 import { TelegramSessions } from './DDD/telegram/registration/entities/telegram-sessions.entity';
 import { TelegramMessage } from './DDD/telegram/messages/entities/telegram-message.entity';
+import { Thing } from './DDD/things/entities/thing.entity';
+import { Message } from './DDD/messages/entities/message.entity';
+import { Anonymous } from './DDD/anonymous/entities/anonymous.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { FilesModule } from './files/files.module';
 
 import { TelegramModule } from './DDD/telegram/registration/telegram.module';
 import { TelegramMessagingModule } from './DDD/telegram/messages/telegram-messages.module';
 import { UsersModule } from './DDD/users/users.module';
+import { ThingsModule } from './DDD/things/things.module';
+import { MessagesModule } from './DDD/messages/messages.module';
+import { AnonymousModule } from './DDD/anonymous/anonymous.module';
 
 
 @Module({
@@ -34,6 +41,9 @@ import { UsersModule } from './DDD/users/users.module';
             User,
             TelegramSessions,
             TelegramMessage,
+            Thing,
+            Message,
+            Anonymous,
           ],
           synchronize: true,
         };
@@ -54,6 +64,10 @@ import { UsersModule } from './DDD/users/users.module';
     TelegramMessagingModule,
     ScheduleModule.forRoot(),
     UsersModule,
+    ThingsModule,
+    FilesModule,
+    MessagesModule,
+    AnonymousModule,
 
 
   ],

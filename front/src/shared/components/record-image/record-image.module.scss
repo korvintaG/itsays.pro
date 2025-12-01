@@ -1,0 +1,306 @@
+.container {
+    display: flex;
+    min-width: 110px;
+    max-width: 110px;
+    /*max-height: 50vh;*/
+    /*border: 1px solid black;*/
+    
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;    
+    object-fit:contain;
+    flex-grow: 0;
+    /*border: 1px lightgray solid;*/
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);    
+}
+
+.label {
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+/*.hidden {
+        opacity: 0;
+        height: 0;
+        width: 0;
+        line-height: 0;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        appearance: none;
+}*/
+.hidden {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  
+
+.control {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    margin: 0 auto;
+    /*border: 1px solid green;*/
+    align-self: flex-start;
+}
+
+.button, .button_del {
+    padding: 5px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    flex-grow: 1;
+    width: 100%;
+    
+}
+
+.button {
+    background-color: #28a745; /* Зеленый цвет */
+    color: white;
+}
+
+.button:hover {
+    background-color: #218838;
+  }
+
+.button:active {
+    transform: scale(0.95);
+}
+
+/*.error {
+    color: #dc3545;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+  }
+
+/********************************************
+* адаптивность
+********************************************/
+.uploadButtonWrapper {
+    position: relative;
+    width: 100%;
+    align-self: flex-start;
+    /*border: 1px solid red;*/
+}
+
+.menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid darkgray;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 210px;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+}
+
+.imageContainer {
+    position: relative;
+
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit:cover;
+        border-radius: 16px;
+    }
+    & button {
+        position: absolute;
+        top: -15px;
+        right: -20px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menuItem {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: #333333;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.menuItem:hover {
+    background-color: #f5f5f5;
+}
+
+.menuItem:active {
+    background-color: #e8e8e8;
+}
+
+.cameraOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cameraContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cameraVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #000;
+}
+
+.hiddenCanvas {
+    display: none;
+}
+
+.cameraControls {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.captureButton {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.captureButton:active {
+    transform: scale(0.9);
+}
+
+.captureButton:hover {
+    border-color: #cccccc;
+}
+
+.captureButtonInner {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: block;
+}
+
+.uploadButton {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: black;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    &:active {
+        outline: none;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+}
+
+.uploadButtonText {
+    font-size: 14px;
+    font-weight: 500;
+}
+.plusIcon {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+}
+
+.xMarkIcon {
+    width: 28px;
+    color: white;
+    fill: #646464;
+    height: 28px;
+    margin-left: 5px;
+}
+
+.cancelButton {
+    padding: 12px 24px;
+    border: 2px solid #ffffff;
+    border-radius: 25px;
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.cancelButton:active {
+    transform: scale(0.95);
+}
+

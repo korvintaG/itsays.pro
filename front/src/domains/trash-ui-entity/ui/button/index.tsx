@@ -13,7 +13,7 @@ export const UIButton: React.FC = () => {
       ]}
       components={
         <div className={styles.container}>
-          <Button >
+          <Button onClick={()=>console.log('войти')}  >
           Войти
           </Button>
           <Button >

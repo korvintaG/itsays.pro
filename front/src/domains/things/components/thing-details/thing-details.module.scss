@@ -1,0 +1,23 @@
+.prompt_image {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    text-align: left;
+
+    & p {
+        margin: 0;
+        padding: 0;
+    }
+
+    & .prompt_image_load {
+        font-size: 16px;
+        font-weight: 500;
+        color: black;
+    }
+
+    & .prompt_image_size {
+        font-size: 13px;
+        font-weight: 400;
+        color: #939393;
+    }
+}
