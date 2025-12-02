@@ -106,7 +106,12 @@ export const RecordImage: FC<RecordImageProps> = (props) => {
       streamRef.current = null;
     }
     if (videoRef.current) {
-      videoRef.current.srcObject = null;
+      // Очищаем srcObject (поддержка старых браузеров, как в take-photo.tsx)
+      if ('srcObject' in videoRef.current) {
+        videoRef.current.srcObject = null;
+      } else if ('webkitSrcObject' in videoRef.current) {
+        (videoRef.current as any).webkitSrcObject = null;
+      }
     }
     setIsCameraActive(false);
     setIsCapturing(false);
@@ -122,91 +127,67 @@ export const RecordImage: FC<RecordImageProps> = (props) => {
     if (isMediaDevicesSupported) {
       try {
         console.log('[handleTakePhoto] Запрос доступа к камере...');
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-          audio: false
-        });
         
-        console.log('[handleTakePhoto] Поток получен, активные треки:', stream.getVideoTracks().length);
-        streamRef.current = stream;
-        
-        if (!videoRef.current) {
-          console.error('[handleTakePhoto] videoRef.current отсутствует');
-          stopCamera();
-          return;
+        // Пробуем разные конфигурации камеры для лучшей совместимости (как в take-photo.tsx)
+        const cameraConfigs = [
+          { video: true, audio: false },
+          { video: { facingMode: 'user' }, audio: false },
+          { video: { facingMode: 'environment' }, audio: false }
+        ];
+
+        let stream: MediaStream | null = null;
+        let lastError: any = null;
+
+        for (const config of cameraConfigs) {
+          try {
+            console.log('[handleTakePhoto] Пробуем конфигурацию:', JSON.stringify(config));
+            stream = await navigator.mediaDevices.getUserMedia(config);
+            console.log('[handleTakePhoto] Поток получен успешно!');
+            break;
+          } catch (error: any) {
+            console.warn('[handleTakePhoto] Конфигурация не сработала:', config, error?.message);
+            lastError = error;
+            continue;
+          }
         }
 
-        const video = videoRef.current;
-        
-        // Убеждаемся, что видео правильно настроено для HTTPS
-        video.muted = true;
-        video.setAttribute('playsinline', 'true');
-        video.setAttribute('autoplay', 'true');
-        
-        // Устанавливаем srcObject ДО попытки воспроизведения
-        video.srcObject = stream;
-        
-        // Проверяем, что поток активен
-        const videoTrack = stream.getVideoTracks()[0];
-        if (!videoTrack || videoTrack.readyState !== 'live') {
-          console.error('[handleTakePhoto] Видео трек не активен:', videoTrack?.readyState);
-          setErrorMessage('Камера не активна. Проверьте разрешения браузера.');
-          msgErrorHook.openDialogDirectly();
-          stopCamera();
+        if (!stream) {
+          console.error('[handleTakePhoto] Все конфигурации не сработали, последняя ошибка:', lastError);
+          // Fallback на file input
+          setTimeout(() => {
+            if (cameraInputRef.current) {
+              cameraInputRef.current.click();
+            }
+          }, 100);
           return;
         }
         
-        console.log('[handleTakePhoto] Видео трек активен, готовность:', videoTrack.readyState);
+        streamRef.current = stream;
         
-        // Ждем, пока видео будет готово (особенно важно для HTTPS и Android)
-        const handleLoadedMetadata = () => {
-          console.log('[handleTakePhoto] Видео готово, размеры:', video.videoWidth, video.videoHeight, 'readyState:', video.readyState);
-          video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-          
-          // Пытаемся воспроизвести после загрузки метаданных
-          video.play()
-            .then(() => {
-              console.log('[handleTakePhoto] Видео успешно воспроизводится');
-              setIsCameraActive(true);
-            })
-            .catch(err => {
-              console.error('[handleTakePhoto] Ошибка воспроизведения видео после loadedmetadata:', err);
+        // ВАЖНО: Устанавливаем isCameraActive сразу, чтобы overlay появился (как в take-photo.tsx)
+        setIsCameraActive(true);
+        
+        // Ждем немного, чтобы video элемент был готов
+        setTimeout(() => {
+          if (videoRef.current) {
+            const video = videoRef.current;
+            
+            // Устанавливаем srcObject (поддержка старых браузеров)
+            if ('srcObject' in video) {
+              video.srcObject = stream;
+            } else if ('webkitSrcObject' in video) {
+              (video as any).webkitSrcObject = stream;
+            }
+            
+            // Пытаемся воспроизвести
+            video.play().catch(err => {
+              console.error('[handleTakePhoto] Ошибка воспроизведения видео:', err);
               setErrorMessage('Не удалось запустить камеру. Попробуйте снова.');
               msgErrorHook.openDialogDirectly();
               stopCamera();
             });
-        };
-        
-        const handleLoadedData = () => {
-          console.log('[handleTakePhoto] Видео данные загружены');
-          video.removeEventListener('loadeddata', handleLoadedData);
-        };
-        
-        const handleCanPlay = () => {
-          console.log('[handleTakePhoto] Видео готово к воспроизведению');
-          video.removeEventListener('canplay', handleCanPlay);
-        };
-        
-        video.addEventListener('loadedmetadata', handleLoadedMetadata);
-        video.addEventListener('loadeddata', handleLoadedData);
-        video.addEventListener('canplay', handleCanPlay);
-        
-        // Пытаемся воспроизвести сразу (для HTTPS может потребоваться)
-        video.play()
-          .then(() => {
-            console.log('[handleTakePhoto] Видео воспроизводится сразу');
-            setIsCameraActive(true);
-          })
-          .catch(err => {
-            console.warn('[handleTakePhoto] Не удалось воспроизвести сразу, ждем loadedmetadata:', err);
-            // Не показываем ошибку здесь - ждем loadedmetadata
-          });
-        
-        // Обработка ошибок потока
-        videoTrack.addEventListener('ended', () => {
-          console.warn('[handleTakePhoto] Видео трек завершен');
-          stopCamera();
-        });
+          }
+        }, 100);
         
       } catch (error) {
         console.error('[handleTakePhoto] Ошибка доступа к камере:', error);
@@ -365,51 +346,6 @@ const capturePhoto = useCallback(() => {
     };
   }, [stopCamera]);
 
-  // Отслеживание состояния видеопотока для отладки на HTTPS
-  useEffect(() => {
-    if (!videoRef.current || !isCameraActive) return;
-
-    const video = videoRef.current;
-    const checkStream = () => {
-      if (video.srcObject) {
-        const stream = video.srcObject as MediaStream;
-        const tracks = stream.getVideoTracks();
-        console.log('[useEffect] Проверка потока:', {
-          tracksCount: tracks.length,
-          tracksState: tracks.map(t => ({ id: t.id, readyState: t.readyState, enabled: t.enabled })),
-          videoReadyState: video.readyState,
-          videoWidth: video.videoWidth,
-          videoHeight: video.videoHeight,
-          videoPaused: video.paused,
-          videoMuted: video.muted
-        });
-
-        // Если поток не активен, пытаемся восстановить
-        if (tracks.length > 0 && tracks[0].readyState !== 'live') {
-          console.warn('[useEffect] Видео трек не активен, пытаемся восстановить...');
-          tracks[0].enabled = true;
-        }
-
-        // Если видео не воспроизводится, пытаемся запустить
-        if (video.paused && video.readyState >= 2) {
-          console.log('[useEffect] Видео приостановлено, пытаемся воспроизвести...');
-          video.play().catch(err => {
-            console.error('[useEffect] Ошибка при попытке воспроизвести:', err);
-          });
-        }
-      }
-    };
-
-    // Проверяем сразу
-    checkStream();
-
-    // Проверяем периодически
-    const interval = setInterval(checkStream, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [isCameraActive]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
