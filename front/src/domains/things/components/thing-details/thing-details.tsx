@@ -102,7 +102,9 @@ export const ThingDetails: FC<ThingDetailsProps> = ({
             </p>
           </div>
           <RecordImage 
-            imageURL={form?.values.image_URL ?? null}
+            imageURL={form  && form.values.image_URL_brief
+              ? form.values.image_URL_brief
+              : null}
             newImageURL={form?.values.new_image_URL}
             readOnly={status.editAccessStatus === EditAccessStatus.Readonly}
             uploadFileAction={record.uploadFileAction}

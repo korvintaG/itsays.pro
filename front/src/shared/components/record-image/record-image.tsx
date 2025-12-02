@@ -128,11 +128,12 @@ export const RecordImage: FC<RecordImageProps> = (props) => {
       try {
         console.log('[handleTakePhoto] Запрос доступа к камере...');
         
-        // Пробуем разные конфигурации камеры для лучшей совместимости (как в take-photo.tsx)
+        // Пробуем разные конфигурации камеры для лучшей совместимости
+        // Приоритет: сначала задняя камера (environment), потом фронтальная (user), потом любая
         const cameraConfigs = [
-          { video: true, audio: false },
-          { video: { facingMode: 'user' }, audio: false },
-          { video: { facingMode: 'environment' }, audio: false }
+          { video: { facingMode: 'environment' }, audio: false }, // Задняя камера (приоритет для мобильных)
+          { video: { facingMode: 'user' }, audio: false }, // Фронтальная камера
+          { video: true, audio: false } // Любая доступная камера (fallback для веб-камер)
         ];
 
         let stream: MediaStream | null = null;

@@ -26,7 +26,7 @@ export const ThingListEl: React.FC<ThingListElProps> = ({thing, cnt}) => {
                       {thing.image_URL_brief && 
                         <img 
                           className={styles.image}
-                          src={`${STORE_FILE_PATH}/${thing.image_URL_brief}`} 
+                          src={`${STORE_FILE_PATH}/${thing.image_URL_brief}?random=${Date.now()}`} 
                           alt={thing.name} 
                         />
                       }

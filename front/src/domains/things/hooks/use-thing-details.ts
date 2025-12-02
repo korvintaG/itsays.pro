@@ -34,6 +34,7 @@ export const useThingDetails = ({ id, currentUser }: DetailsHookProps)
     name: "",
     description: "",
     image_URL: "",
+    image_URL_brief: "",
     new_image_URL: undefined
   });
 
@@ -59,7 +60,7 @@ export const useThingDetails = ({ id, currentUser }: DetailsHookProps)
     if (currentRecord) {
       setValues({
         ...pick(currentRecord,
-          ["name", "description", "UIN", "image_URL"]), // 
+          ["name", "description", "UIN", "image_URL", "image_URL_brief"]), // 
         new_image_URL: undefined
       });
       //setCurrentFileName(currentRecord.image_URL);
