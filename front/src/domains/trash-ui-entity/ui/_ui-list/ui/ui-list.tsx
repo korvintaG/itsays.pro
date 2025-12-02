@@ -9,6 +9,7 @@ import React from 'react'
 import { UIAppHeader } from '../../app-header'
 import { UIModalWindow } from '../../modal-window'
 import { UILoginForm } from '../../login-form'
+import CameraCapture from '../../../../../shared/ui/camera-capture/camera-capture'
 
 export const UIList: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ export const UIList: React.FC = () => {
         <UITakePhoto />
         <UIQRCode />
         <UILoginForm />
+        <CameraCapture />
     </div>
   )
 }

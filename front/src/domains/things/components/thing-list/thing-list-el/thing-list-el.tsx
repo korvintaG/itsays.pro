@@ -22,15 +22,15 @@ export const ThingListEl: React.FC<ThingListElProps> = ({thing, cnt}) => {
                     data-cy={`thing_link_${cnt}`}
                     className={styles.link}
                     >
-                    {thing.image_URL_brief && 
-                      <div className={styles.avatar}>
+                    <div className={styles.avatar}>
+                      {thing.image_URL_brief && 
                         <img 
                           className={styles.image}
                           src={`${STORE_FILE_PATH}/${thing.image_URL_brief}`} 
                           alt={thing.name} 
                         />
+                      }
                       </div>
-                    }
                     <div className={styles.info}>
                       <p className={styles.name}>{thing.name}</p>
                       <p className={styles.UIN}>{thing.UIN}</p>

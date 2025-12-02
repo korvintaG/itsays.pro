@@ -55,7 +55,12 @@ export async function safeRename(oldPath: string, newPath: string) {
   const dir = path.dirname(newPath);
   try {
     await fs.mkdir(dir, { recursive: true });
-    await fs.rename(oldPath, newPath);
+    
+    // Используем copyFile + unlink вместо rename для поддержки cross-device операций
+    // (важно для Docker контейнеров, где uploads и dbimages могут быть на разных томах)
+    await fs.copyFile(oldPath, newPath);
+    await fs.unlink(oldPath);
+    
     // Извлекаем только имя файла из полного пути
     const fileName = path.basename(newPath);
     // Пытаемся создать brief-изображение, но не прерываем процесс при ошибке
