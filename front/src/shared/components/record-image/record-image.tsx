@@ -224,116 +224,98 @@ export const RecordImage: FC<RecordImageProps> = (props) => {
     }, 100);
   }, []);
 
-  // --- НОВЫЙ capturePhoto С КОРРЕКТНОЙ ОРИЕНТАЦИЕЙ ---
-const capturePhoto = useCallback(() => {
-  // Защита от повторных нажатий
-  if (isCapturing) {
-    console.log('[capturePhoto] Уже выполняется захват, игнорируем');
-    return;
-  }
-
-  const video = videoRef.current;
-  const canvas = canvasRef.current;
-
-  if (!video || !canvas) {
-    console.error('[capturePhoto] video или canvas не доступны');
-    return;
-  }
-
-  // Проверка, что видео готово
-  const vw = video.videoWidth;
-  const vh = video.videoHeight;
-  
-  if (!vw || !vh || vw === 0 || vh === 0) {
-    console.error('[capturePhoto] Видео не готово:', { vw, vh });
-    setErrorMessage('Камера не готова. Подождите немного и попробуйте снова.');
-    msgErrorHook.openDialogDirectly();
-    return;
-  }
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    console.error('[capturePhoto] Не удалось получить контекст canvas');
-    return;
-  }
-
-  console.log('[capturePhoto] Начинаем захват:', { vw, vh });
-  setIsCapturing(true);
-
-  // Определяем: камера "лежит" (портрет) или "стоит" (ландшафт)
-  const isPortrait = vh > vw; // смартфон чаще отдаёт так
-
-  try {
-    if (isPortrait) {
-      // Меняем местами ширину и высоту canvas,
-      // чтобы вместился повернутый кадр
-      canvas.width = vh;
-      canvas.height = vw;
-
-      ctx.save();
-      // Поворачиваем canvas на 90° вправо
-      ctx.translate(canvas.width, 0);
-      ctx.rotate(90 * Math.PI / 180);
-
-      // Рисуем video в повернутом контексте
-      ctx.drawImage(video, 0, 0, vw, vh);
-      ctx.restore();
-    } else {
-      // Горизонтальная ориентация — без поворота
-      canvas.width = vw;
-      canvas.height = vh;
-      ctx.drawImage(video, 0, 0, vw, vh);
+  const capturePhoto = useCallback(() => {
+    // Защита от повторных нажатий
+    if (isCapturing) {
+      console.log('[capturePhoto] Уже выполняется захват, игнорируем');
+      return;
     }
 
-    console.log('[capturePhoto] Canvas нарисован, создаем blob...');
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (!video || !canvas) {
+      console.error('[capturePhoto] video или canvas не доступны');
+      return;
+    }
+
+    // Проверка, что видео готово
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
     
-    // Используем Promise для лучшей обработки асинхронности на Android
-    new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, "image/jpeg", 0.9);
-    })
-    .then((blob) => {
-      if (!blob) {
-        console.error('[capturePhoto] Не удалось создать blob');
-        setErrorMessage('Не удалось создать изображение. Попробуйте снова.');
+    if (!vw || !vh || vw === 0 || vh === 0) {
+      console.error('[capturePhoto] Видео не готово:', { vw, vh });
+      setErrorMessage('Камера не готова. Подождите немного и попробуйте снова.');
+      msgErrorHook.openDialogDirectly();
+      return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error('[capturePhoto] Не удалось получить контекст canvas');
+      return;
+    }
+
+    console.log('[capturePhoto] Начинаем захват:', { vw, vh });
+    setIsCapturing(true);
+
+    try {
+      // Устанавливаем размеры canvas равными размерам video (как в take-photo.tsx)
+      canvas.width = vw;
+      canvas.height = vh;
+
+      // Рисуем video на canvas без поворотов (как в take-photo.tsx)
+      ctx.drawImage(video, 0, 0);
+
+      console.log('[capturePhoto] Canvas нарисован, создаем blob...');
+      
+      // Используем Promise для лучшей обработки асинхронности на Android
+      new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, "image/jpeg", 0.9);
+      })
+      .then((blob) => {
+        if (!blob) {
+          console.error('[capturePhoto] Не удалось создать blob');
+          setErrorMessage('Не удалось создать изображение. Попробуйте снова.');
+          msgErrorHook.openDialogDirectly();
+          setIsCapturing(false);
+          return;
+        }
+
+        console.log('[capturePhoto] Blob создан, размер:', blob.size);
+        
+        const file = new File([blob], `photo-${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+        
+        console.log('[capturePhoto] Файл создан, вызываем processFile...');
+        
+        // Вызываем processFile и ждем немного перед закрытием камеры
+        // чтобы дать время на обработку на Android
+        processFile(file);
+        
+        // Задержка перед закрытием камеры для Android
+        setTimeout(() => {
+          console.log('[capturePhoto] Закрываем камеру');
+          stopCamera();
+          setIsCapturing(false);
+        }, 300);
+      })
+      .catch((error) => {
+        console.error('[capturePhoto] Ошибка при создании blob:', error);
+        setErrorMessage('Ошибка при создании снимка. Попробуйте снова.');
         msgErrorHook.openDialogDirectly();
         setIsCapturing(false);
-        return;
-      }
-
-      console.log('[capturePhoto] Blob создан, размер:', blob.size);
-      
-      const file = new File([blob], `photo-${Date.now()}.jpg`, {
-        type: "image/jpeg",
       });
-      
-      console.log('[capturePhoto] Файл создан, вызываем processFile...');
-      
-      // Вызываем processFile и ждем немного перед закрытием камеры
-      // чтобы дать время на обработку на Android
-      processFile(file);
-      
-      // Задержка перед закрытием камеры для Android
-      setTimeout(() => {
-        console.log('[capturePhoto] Закрываем камеру');
-        stopCamera();
-        setIsCapturing(false);
-      }, 300);
-    })
-    .catch((error) => {
-      console.error('[capturePhoto] Ошибка при создании blob:', error);
-      setErrorMessage('Ошибка при создании снимка. Попробуйте снова.');
+    } catch (error) {
+      console.error('[capturePhoto] Ошибка при захвате:', error);
+      setErrorMessage('Ошибка при захвате изображения. Попробуйте снова.');
       msgErrorHook.openDialogDirectly();
       setIsCapturing(false);
-    });
-  } catch (error) {
-    console.error('[capturePhoto] Ошибка при захвате:', error);
-    setErrorMessage('Ошибка при захвате изображения. Попробуйте снова.');
-    msgErrorHook.openDialogDirectly();
-    setIsCapturing(false);
-  }
-}, [processFile, stopCamera, isCapturing, msgErrorHook]);
+    }
+  }, [processFile, stopCamera, isCapturing, msgErrorHook]);
 
   const handleMenuClick = useCallback((e: SyntheticEvent) => {
     e.preventDefault();
